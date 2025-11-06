@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resonance Calculus Results | Real-Time Performance Metrics</title>
+    <meta name="description" content="Real-time Resonance Calculus performance metrics, component breakdown, and validation results">
+    
+    <!-- Chart.js for visualizations -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@3.0.0/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
+    
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <h1 class="logo">Resonance Calculus</h1>
+                <p class="subtitle">Real-Time Performance Metrics & Validation Results</p>
+            </div>
+            <div class="header-meta">
+                <span class="last-updated">Last Updated: <span id="lastUpdated">Loading...</span></span>
+                <span class="status-badge" id="statusBadge">● Live</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container">
+        <!-- Executive Summary -->
+        <section class="summary-section">
+            <h2>Executive Summary</h2>
+            <div class="summary-grid">
+                <div class="summary-card primary">
+                    <div class="card-label">Global Resonance R(t)</div>
+                    <div class="card-value" id="globalR">-</div>
+                    <div class="card-status" id="rStatus">-</div>
+                    <div class="card-band">
+                        <div class="band-indicator" id="bandIndicator"></div>
+                        <span class="band-label">Target: [0.35, 0.65]</span>
+                    </div>
+                </div>
+                
+                <div class="summary-card">
+                    <div class="card-label">Band Compliance</div>
+                    <div class="card-value" id="bandCompliance">-</div>
+                    <div class="card-subvalue">Target: ≥85%</div>
+                </div>
+                
+                <div class="summary-card">
+                    <div class="card-label">P99 Latency Improvement</div>
+                    <div class="card-value" id="p99Improvement">-</div>
+                    <div class="card-subvalue">vs Baseline</div>
+                </div>
+                
+                <div class="summary-card">
+                    <div class="card-label">Validation Status</div>
+                    <div class="card-value" id="validationStatus">-</div>
+                    <div class="card-subvalue" id="validationDetails">-</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Resonance Components Breakdown -->
+        <section class="components-section">
+            <h2>Resonance Components</h2>
+            <div class="components-grid">
+                <div class="component-card coherence">
+                    <div class="component-header">
+                        <h3>Coherence Score</h3>
+                        <span class="component-icon">📊</span>
+                    </div>
+                    <div class="component-value" id="coherenceScore">-</div>
+                    <div class="component-bar">
+                        <div class="component-progress" id="coherenceBar" style="width: 0%"></div>
+                    </div>
+                    <div class="component-description">
+                        Coherence-Weighted Service Curve (CWSC)
+                    </div>
+                </div>
+                
+                <div class="component-card tail">
+                    <div class="component-header">
+                        <h3>Tail Health Score</h3>
+                        <span class="component-icon">📈</span>
+                    </div>
+                    <div class="component-value" id="tailHealthScore">-</div>
+                    <div class="component-bar">
+                        <div class="component-progress" id="tailBar" style="width: 0%"></div>
+                    </div>
+                    <div class="component-description">
+                        Extreme Value Theory (EVT/GPD)
+                    </div>
+                </div>
+                
+                <div class="component-card timing">
+                    <div class="component-header">
+                        <h3>Timing Score</h3>
+                        <span class="component-icon">⏱️</span>
+                    </div>
+                    <div class="component-value" id="timingScore">-</div>
+                    <div class="component-bar">
+                        <div class="component-progress" id="timingBar" style="width: 0%"></div>
+                    </div>
+                    <div class="component-description">
+                        Max-Plus Algebra (Cycle Time)
+                    </div>
+                </div>
+                
+                <div class="component-card lambda">
+                    <div class="component-header">
+                        <h3>Max-Plus λ_res</h3>
+                        <span class="component-icon">🔗</span>
+                    </div>
+                    <div class="component-value" id="lambdaRes">-</div>
+                    <div class="component-description">
+                        Maximum Cycle Mean
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Global Resonance R(t) Chart -->
+        <section class="chart-section">
+            <h2>Global Resonance R(t) Over Time</h2>
+            <div class="chart-container">
+                <canvas id="rChart"></canvas>
+            </div>
+            <div class="chart-controls">
+                <button class="time-range-btn active" data-range="1h">Last Hour</button>
+                <button class="time-range-btn" data-range="24h">Last 24 Hours</button>
+                <button class="time-range-btn" data-range="7d">Last 7 Days</button>
+                <button class="time-range-btn" data-range="30d">Last 30 Days</button>
+            </div>
+        </section>
+
+        <!-- Component Breakdown Chart -->
+        <section class="chart-section">
+            <h2>Component Breakdown</h2>
+            <div class="chart-container">
+                <canvas id="componentsChart"></canvas>
+            </div>
+        </section>
+
+        <!-- Tail Health Analysis -->
+        <section class="tail-section">
+            <h2>Tail Health Analysis</h2>
+            <div class="tail-grid">
+                <div class="tail-card">
+                    <h3>GPD Parameters</h3>
+                    <div class="tail-params">
+                        <div class="param-item">
+                            <span class="param-label">Shape (ξ):</span>
+                            <span class="param-value" id="gpdXi">-</span>
+                        </div>
+                        <div class="param-item">
+                            <span class="param-label">Scale (σ):</span>
+                            <span class="param-value" id="gpdSigma">-</span>
+                        </div>
+                        <div class="param-item">
+                            <span class="param-label">Threshold (u):</span>
+                            <span class="param-value" id="gpdThreshold">-</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="tail-card">
+                    <h3>Tail Quantiles</h3>
+                    <div class="tail-quantiles">
+                        <div class="quantile-item">
+                            <span class="quantile-label">Q99:</span>
+                            <span class="quantile-value" id="tailQ99">-</span>
+                            <span class="quantile-unit">ms</span>
+                        </div>
+                        <div class="quantile-item">
+                            <span class="quantile-label">Q99.9:</span>
+                            <span class="quantile-value" id="tailQ99_9">-</span>
+                            <span class="quantile-unit">ms</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Performance Metrics -->
+        <section class="metrics-section">
+            <h2>Performance Metrics</h2>
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <div class="metric-label">P50 Latency</div>
+                    <div class="metric-value" id="p50Latency">-</div>
+                    <div class="metric-unit">ms</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label">P95 Latency</div>
+                    <div class="metric-value" id="p95Latency">-</div>
+                    <div class="metric-unit">ms</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label">P99 Latency</div>
+                    <div class="metric-value" id="p99Latency">-</div>
+                    <div class="metric-unit">ms</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label">P99.9 Latency</div>
+                    <div class="metric-value" id="p99_9Latency">-</div>
+                    <div class="metric-unit">ms</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label">Spectral Entropy</div>
+                    <div class="metric-value" id="spectralEntropy">-</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label">Coupling K(t)</div>
+                    <div class="metric-value" id="couplingK">-</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Validation Results -->
+        <section class="validation-section">
+            <h2>Validation Results</h2>
+            <div class="validation-grid">
+                <div class="validation-card">
+                    <h3>Test Coverage</h3>
+                    <div class="validation-stats">
+                        <div class="stat-item">
+                            <span class="stat-label">Tests Passed:</span>
+                            <span class="stat-value" id="testsPassed">-</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Total Tests:</span>
+                            <span class="stat-value" id="totalTests">-</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Coverage:</span>
+                            <span class="stat-value" id="testCoverage">-</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="validation-card">
+                    <h3>System Health</h3>
+                    <div class="health-indicators">
+                        <div class="health-item">
+                            <span class="health-label">Agent Status:</span>
+                            <span class="health-value" id="agentStatus">-</span>
+                        </div>
+                        <div class="health-item">
+                            <span class="health-label">Metrics Collection:</span>
+                            <span class="health-value" id="metricsStatus">-</span>
+                        </div>
+                        <div class="health-item">
+                            <span class="health-label">Data Quality:</span>
+                            <span class="health-value" id="dataQuality">-</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>Resonance Calculus Results | <a href="https://resonance.syncscript.app">Main Dashboard</a></p>
+            <p class="footer-meta">Data updates every 5 seconds | Last validation: <span id="lastValidation">-</span></p>
+        </footer>
+    </main>
+
+    <script src="assets/js/metrics.js"></script>
+    <script src="assets/js/charts.js"></script>
+</body>
+</html>
+

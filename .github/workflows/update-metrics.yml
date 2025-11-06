@@ -1,0 +1,42 @@
+name: Update Metrics
+
+on:
+  schedule:
+    # Run every 5 minutes
+    - cron: '*/5 * * * *'
+  workflow_dispatch:  # Allow manual trigger
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Fetch metrics from API
+        id: fetch
+        run: |
+          # Try to fetch from API, fallback to keeping existing file if API is unavailable
+          curl -f -o data/metrics.json https://resonance.syncscript.app/api/metrics || echo "API unavailable, keeping existing metrics"
+        continue-on-error: true
+
+      - name: Check for changes
+        id: check
+        run: |
+          if [ -n "$(git status --porcelain data/metrics.json)" ]; then
+            echo "changed=true" >> $GITHUB_OUTPUT
+          else
+            echo "changed=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Commit and push
+        if: steps.check.outputs.changed == 'true'
+        run: |
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+          git add data/metrics.json
+          git commit -m "Auto-update metrics [skip ci]"
+          git push
+

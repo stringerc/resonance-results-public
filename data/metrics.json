@@ -1,0 +1,38 @@
+{
+  "R": 0.52,
+  "K": 0.35,
+  "spectralEntropy": 0.48,
+  "mode": "adaptive",
+  "coherenceScore": 0.72,
+  "tailHealthScore": 0.65,
+  "timingScore": 0.58,
+  "lambdaRes": 12.5,
+  "gpd": {
+    "xi": 0.15,
+    "sigma": 8.3,
+    "threshold": 45.2
+  },
+  "tailQuantiles": {
+    "q99": 78.5,
+    "q99_9": 125.3
+  },
+  "p50Latency": 45,
+  "p95Latency": 68,
+  "p99Latency": 95,
+  "p99_9Latency": 145,
+  "bandCompliance": 82.5,
+  "p99Improvement": 18.5,
+  "validation": {
+    "status": "Passing",
+    "testsPassed": 29,
+    "totalTests": 29,
+    "coverage": "100%",
+    "details": "All Resonance Calculus integration tests passing"
+  },
+  "agentStatus": "Online",
+  "metricsStatus": "Active",
+  "dataQuality": "Good",
+  "lastValidation": "2025-11-06T12:00:00Z",
+  "timestamp": "2025-11-06T12:00:00Z"
+}
+
