@@ -3,7 +3,10 @@ class ResonanceMetrics {
     constructor() {
         this.data = null;
         this.updateInterval = 5000; // 5 seconds
-        this.dataSource = 'data/metrics.json'; // Or API endpoint
+        // Primary: Real-time API endpoint
+        this.apiSource = 'https://resonance.syncscript.app/api/metrics';
+        // Fallback: Static JSON file
+        this.fallbackSource = 'data/metrics.json';
         this.init();
     }
 
@@ -15,26 +18,77 @@ class ResonanceMetrics {
 
     async loadMetrics() {
         try {
-            // Option 1: Load from JSON file
-            const response = await fetch(this.dataSource);
-            if (!response.ok) {
-                throw new Error(`HTTP ${response.status}`);
+            // PRIMARY: Load from real-time API endpoint
+            const apiResponse = await fetch(this.apiSource);
+            if (apiResponse.ok) {
+                const apiData = await apiResponse.json();
+                // Transform API response to match our display format
+                this.data = this.transformApiData(apiData);
+                this.updateLastUpdated();
+                return;
             }
-            this.data = await response.json();
             
-            // Option 2: Load from API (if available)
-            // Uncomment to use API instead:
-            // const apiResponse = await fetch('https://resonance.syncscript.app/api/metrics');
-            // if (apiResponse.ok) {
-            //     this.data = await apiResponse.json();
-            // }
+            // FALLBACK: Load from static JSON file if API is unavailable
+            console.warn('API unavailable, using fallback data');
+            const response = await fetch(this.fallbackSource);
+            if (response.ok) {
+                this.data = await response.json();
+                this.updateLastUpdated();
+                return;
+            }
             
-            this.updateLastUpdated();
+            throw new Error('Both API and fallback failed');
         } catch (error) {
             console.error('Failed to load metrics:', error);
-            // Fallback to mock data for demo
+            // Last resort: mock data for demo
             this.data = this.getMockData();
+            this.updateLastUpdated();
         }
+    }
+
+    transformApiData(apiData) {
+        // Transform the API response to match our expected format
+        // API returns: { R, K, spectralEntropy, mode, coherenceScore, tailHealthScore, timingScore, lambdaRes, gpd, tailQuantiles, p99Latency, p50Latency, ... }
+        return {
+            R: apiData.R || 0.5,
+            K: apiData.K || 0.35,
+            spectralEntropy: apiData.spectralEntropy || 0.5,
+            mode: apiData.mode || 'adaptive',
+            coherenceScore: apiData.coherenceScore,
+            tailHealthScore: apiData.tailHealthScore,
+            timingScore: apiData.timingScore,
+            lambdaRes: apiData.lambdaRes,
+            gpd: apiData.gpd,
+            tailQuantiles: apiData.tailQuantiles,
+            p50Latency: apiData.p50Latency,
+            p95Latency: apiData.p95Latency || apiData.p99Latency, // Use p99 as fallback for p95
+            p99Latency: apiData.p99Latency,
+            p99_9Latency: apiData.p99_9Latency || apiData.tailQuantiles?.q99_9,
+            bandCompliance: this.calculateBandCompliance(apiData.R),
+            p99Improvement: apiData.p99Improvement || null,
+            validation: {
+                status: apiData.agentConnected ? 'Online' : 'Offline',
+                testsPassed: apiData.validation?.testsPassed || null,
+                totalTests: apiData.validation?.totalTests || null,
+                coverage: apiData.validation?.coverage || null,
+                details: apiData.agentConnected ? 'Connected to Resonance agent' : 'Agent not connected'
+            },
+            agentStatus: apiData.agentConnected ? 'Online' : 'Offline',
+            metricsStatus: apiData.agentConnected ? 'Active' : 'Inactive',
+            dataQuality: apiData.agentConnected ? 'Live' : 'Mock',
+            lastValidation: apiData.timestamp || new Date().toISOString(),
+            timestamp: apiData.timestamp || new Date().toISOString()
+        };
+    }
+
+    calculateBandCompliance(R) {
+        // Calculate what percentage of time R is in the optimal band [0.35, 0.65]
+        // For real-time data, this is just a single point, so we return 100% if in band
+        if (R >= 0.35 && R <= 0.65) {
+            return 100;
+        }
+        // Could be improved to track historical compliance
+        return 0;
     }
 
     updateDisplay() {
