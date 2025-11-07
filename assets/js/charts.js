@@ -6,6 +6,7 @@ class ResonanceCharts {
         this.componentsChart = null;
         this.history = [];
         this.currentTimeRange = '1h';
+        this.statusEl = null;
         this.init();
     }
 
@@ -13,6 +14,7 @@ class ResonanceCharts {
         this.initRChart();
         this.initComponentsChart();
         this.initTimeRangeButtons();
+        this.statusEl = document.getElementById('timeRangeStatus');
         this.startHistoryUpdate();
     }
 
@@ -185,7 +187,10 @@ class ResonanceCharts {
     }
 
     filterHistory() {
-        if (!this.rChart || this.history.length === 0) return;
+        if (!this.rChart || this.history.length === 0) {
+            this.updateRChartWithHistory([]);
+            return;
+        }
 
         const now = Date.now();
         let cutoffTime;
@@ -211,8 +216,48 @@ class ResonanceCharts {
         this.updateRChartWithHistory(filtered);
     }
 
+    rangeLabel() {
+        switch (this.currentTimeRange) {
+            case '1h':
+                return 'the last hour';
+            case '24h':
+                return 'the last 24 hours';
+            case '7d':
+                return 'the last 7 days';
+            case '30d':
+                return 'the last 30 days';
+            default:
+                return 'the selected range';
+        }
+    }
+
+    setStatus(message) {
+        if (!this.statusEl) return;
+        if (message) {
+            this.statusEl.textContent = message;
+            this.statusEl.classList.remove('hidden');
+        } else {
+            this.statusEl.textContent = '';
+            this.statusEl.classList.add('hidden');
+        }
+    }
+
     updateRChartWithHistory(historyData) {
-        if (!this.rChart || historyData.length === 0) return;
+        if (!this.rChart) return;
+
+        if (!historyData || historyData.length === 0) {
+            this.rChart.data.labels = [];
+            this.rChart.data.datasets[0].data = [];
+            this.rChart.update('none');
+            if (this.history.length === 0) {
+                this.setStatus('Waiting for live data...');
+            } else {
+                this.setStatus(`Not enough data collected yet to display ${this.rangeLabel()}.`);
+            }
+            return;
+        }
+
+        this.setStatus('');
 
         // Aggregate data for longer time ranges
         let labels = [];
