@@ -22,19 +22,18 @@ class ResonanceCharts {
         const ctx = document.getElementById('rChart').getContext('2d');
         
         this.rChart = new Chart(ctx, {
-            type: 'line',
+            type: 'scatter',
             data: {
                 labels: [],
                 datasets: [{
                     label: 'R(t)',
                     data: [],
+                    showLine: false,
                     borderColor: '#3b82f6',
-                    backgroundColor: 'rgba(59, 130, 246, 0.1)',
-                    borderWidth: 2,
-                    fill: true,
-                    tension: 0.4,
-                    pointRadius: 0,
-                    pointHoverRadius: 4
+                    backgroundColor: '#3b82f6',
+                    pointRadius: 5,
+                    pointHoverRadius: 7,
+                    pointBackgroundColor: '#3b82f6'
                 }]
             },
             options: {
@@ -266,7 +265,7 @@ class ResonanceCharts {
         if (this.currentTimeRange === '1h' || this.currentTimeRange === '24h') {
             // Show all points for short ranges
             labels = historyData.map(item => new Date(item.timestamp).toLocaleTimeString());
-            data = historyData.map(item => item.R);
+            data = historyData.map(item => ({ x: new Date(item.timestamp), y: item.R }));
         } else {
             // Aggregate for longer ranges
             const buckets = {};
@@ -283,8 +282,9 @@ class ResonanceCharts {
 
             Object.keys(buckets).sort((a, b) => parseInt(a) - parseInt(b)).forEach(bucket => {
                 const avg = buckets[bucket].sum / buckets[bucket].count;
-                labels.push(new Date(parseInt(bucket)).toLocaleString());
-                data.push(avg);
+                const date = new Date(parseInt(bucket));
+                labels.push(date.toLocaleString());
+                data.push({ x: date, y: avg });
             });
         }
 
