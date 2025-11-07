@@ -28,12 +28,16 @@ class ResonanceCharts {
                 datasets: [{
                     label: 'R(t)',
                     data: [],
-                    showLine: false,
+                    showLine: true,
                     borderColor: '#3b82f6',
                     backgroundColor: '#3b82f6',
-                    pointRadius: 5,
-                    pointHoverRadius: 7,
-                    pointBackgroundColor: '#3b82f6'
+                    borderWidth: 1.5,
+                    tension: 0.2,
+                    pointRadius: 4,
+                    pointHoverRadius: 6,
+                    pointBackgroundColor: '#1d4ed8',
+                    pointBorderColor: '#ffffff',
+                    pointBorderWidth: 1.2
                 }]
             },
             options: {
@@ -251,7 +255,7 @@ class ResonanceCharts {
             if (this.history.length === 0) {
                 this.setStatus('Waiting for live data...');
             } else {
-                this.setStatus(`Not enough data collected yet to display ${this.rangeLabel()}.`);
+                this.setStatus(`Not enough data collected yet to display ${this.rangeLabel()}. Leave this page open or send more samples to build history.`);
             }
             return;
         }

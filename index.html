@@ -46,7 +46,7 @@
                 <div class="summary-card">
                     <div class="card-label">Band Compliance</div>
                     <div class="card-value" id="bandCompliance">-</div>
-                    <div class="card-subvalue">Target: ≥85%</div>
+                    <div class="card-subvalue" id="bandComplianceNote">Target: ≥85%</div>
                 </div>
                 
                 <div class="summary-card">
@@ -149,6 +149,14 @@
                 <button class="time-range-btn" data-range="30d">Last 30 Days</button>
             </div>
             <p id="timeRangeStatus" class="text-sm text-gray-500 text-center mt-2 hidden"></p>
+            <div class="chart-explainer">
+                <p>
+                    <strong>How to read this:</strong> Every dot represents one sample from the Resonance agent.
+                    A single synthetic feed keeps R(t) around 0.18, which is expected; real production traffic
+                    or multiple simulated streams will nudge the trace into the green optimal band (0.35 &ndash; 0.65).
+                    Leave this page open to accumulate history, or rerun the phase feeder to refresh the graph.
+                </p>
+            </div>
         </section>
 
         <!-- Component Breakdown Chart -->

@@ -299,13 +299,13 @@ class ResonanceMetrics {
     updateRStatus(r) {
         const statusEl = document.getElementById('rStatus');
         if (r >= 0.35 && r <= 0.65) {
-            statusEl.textContent = '✓ Optimal';
+            statusEl.textContent = '✓ Optimal (system in tune)';
             statusEl.style.color = 'var(--success-color)';
         } else if (r < 0.35) {
-            statusEl.textContent = '⚠ Low';
+            statusEl.textContent = '⚠ Low (needs more synchronized load)';
             statusEl.style.color = 'var(--warning-color)';
         } else {
-            statusEl.textContent = '⚠ High';
+            statusEl.textContent = '⚠ High (too tightly synchronized)';
             statusEl.style.color = 'var(--warning-color)';
         }
     }
@@ -319,12 +319,22 @@ class ResonanceMetrics {
 
     updateComplianceStatus(compliance) {
         const statusEl = document.getElementById('bandCompliance');
+        const noteEl = document.getElementById('bandComplianceNote');
         if (compliance >= 85) {
             statusEl.style.color = 'var(--success-color)';
+            if (noteEl) {
+                noteEl.textContent = '✓ In tune — ≥85% of samples are inside the optimal band';
+            }
         } else if (compliance >= 70) {
             statusEl.style.color = 'var(--warning-color)';
+            if (noteEl) {
+                noteEl.textContent = 'Almost there — keep feeding diverse load to reach 85%';
+            }
         } else {
             statusEl.style.color = 'var(--danger-color)';
+            if (noteEl) {
+                noteEl.textContent = 'Low compliance — add more live traffic or parallel phase streams';
+            }
         }
     }
 

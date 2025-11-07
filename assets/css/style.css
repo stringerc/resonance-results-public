@@ -296,6 +296,21 @@ body {
     border-color: var(--primary-color);
 }
 
+#timeRangeStatus {
+    text-align: center;
+}
+
+.chart-explainer {
+    margin-top: 1rem;
+    background: #eff6ff;
+    border: 1px solid #bfdbfe;
+    padding: 0.75rem 1rem;
+    border-radius: 12px;
+    color: #1e3a8a;
+    font-size: 0.9rem;
+    line-height: 1.5;
+}
+
 /* Tail Section */
 .tail-section {
     margin: 3rem 0;
