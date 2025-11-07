@@ -63,6 +63,20 @@
             </div>
         </section>
 
+        <section class="summary-section">
+            <h2>Tuning Checklist</h2>
+            <div class="summary-card" style="max-width:720px">
+                <p class="card-label" style="margin-bottom:12px">Band compliance improves only when the agent runs in adaptive control and receives live phase samples.</p>
+                <ol class="card-subvalue" style="color:#1f2937; line-height:1.6">
+                    <li><strong>Run the agent in adaptive mode</strong> — set <code>RESONANCE_MODE=adaptive</code> (Render → Environment) and redeploy.</li>
+                    <li><strong>Feed phase / latency samples</strong> — install the Resonance SDK in your service or run <code>node resonance/bench/feed_phases.js</code> to POST samples to the intake endpoint.</li>
+                    <li><strong>Give it a few minutes</strong> — once ~50 samples arrive, Resonance Calculus metrics populate and R(t) begins climbing into the optimal band.</li>
+                    <li><strong>Tune if needed</strong> — adjust coupling (K_min/K_max) or workload mix if R(t) remains outside the band after several minutes.</li>
+                </ol>
+                <p class="card-subvalue" style="margin-top:12px">Need help? Click the Intercom assistant (when enabled) for a guided walkthrough.</p>
+            </div>
+        </section>
+
         <!-- Resonance Components Breakdown -->
         <section class="components-section">
             <h2>Resonance Components</h2>
@@ -271,6 +285,34 @@
 
     <script src="assets/js/metrics.js"></script>
     <script src="assets/js/charts.js"></script>
+    <script>
+        (function(){
+            var appId = window.INTERCOM_APP_ID || 'YOUR_INTERCOM_APP_ID';
+            if(!appId || appId === 'YOUR_INTERCOM_APP_ID') return;
+            window.intercomSettings = { app_id: appId };
+            var w = window; var ic = w.Intercom;
+            if(typeof ic === "function"){
+                ic('reattach_activator');
+                ic('update', window.intercomSettings);
+            } else {
+                var d = document; var i = function(){ i.c(arguments); };
+                i.q = []; i.c = function(args){ i.q.push(args); };
+                w.Intercom = i;
+                function l(){
+                    var s = d.createElement('script'); s.type = 'text/javascript'; s.async = true;
+                    s.src = 'https://widget.intercom.io/widget/' + appId;
+                    var x = d.getElementsByTagName('script')[0]; x.parentNode.insertBefore(s, x);
+                }
+                if(document.readyState === 'complete') {
+                    l();
+                } else if(w.attachEvent) {
+                    w.attachEvent('onload', l);
+                } else {
+                    w.addEventListener('load', l, false);
+                }
+            }
+        })();
+    </script>
 </body>
 </html>
 
